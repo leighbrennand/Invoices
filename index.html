@@ -1,0 +1,1068 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sole Trader Hub</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=DM+Sans:ital,wght@0,300;0,400;0,500;0,600;1,400&display=swap');
+
+:root {
+  --bg: #0d0d0b; --surface: #181714; --border: #2a2825;
+  --amber: #e8a030; --amber-dim: #7a4e10;
+  --green: #4caf7d; --red: #e05555;
+  --text: #e8e0d0; --muted: #7a7060; --card: #1e1c18;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; font-size: 14px; }
+
+.app { display: flex; flex-direction: column; min-height: 100vh; max-width: 920px; margin: 0 auto; padding: 0 16px; }
+.header { display: flex; justify-content: space-between; align-items: center; padding: 20px 0 16px; border-bottom: 1px solid var(--border); flex-wrap: wrap; gap: 12px; }
+.biz-name { font-family: 'DM Serif Display', serif; font-size: 22px; color: var(--amber); }
+.tax-pill { font-size: 11px; color: var(--muted); background: var(--surface); border: 1px solid var(--border); border-radius: 20px; padding: 3px 10px; margin-top: 4px; display: inline-block; }
+.stat-row { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
+.stat-chip { background: var(--card); border: 1px solid var(--border); border-radius: 8px; padding: 6px 12px; font-size: 12px; display: flex; flex-direction: column; gap: 2px; }
+.stat-chip span { color: var(--muted); } .stat-chip strong { font-size: 15px; }
+.nav { display: flex; gap: 4px; padding: 14px 0 0; }
+.nav-btn { background: none; border: none; color: var(--muted); font-family: 'DM Sans', sans-serif; font-size: 14px; font-weight: 500; cursor: pointer; padding: 8px 16px; border-radius: 8px; transition: all .15s; }
+.nav-btn:hover { color: var(--text); background: var(--surface); }
+.nav-btn.active { color: var(--amber); background: var(--card); border: 1px solid var(--amber-dim); }
+.main { padding: 20px 0 60px; flex: 1; }
+.card { background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 20px; margin-bottom: 14px; }
+.card-title { font-family: 'DM Serif Display', serif; font-size: 16px; color: var(--amber); margin-bottom: 16px; }
+.form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.field { display: flex; flex-direction: column; gap: 5px; }
+.field label { font-size: 11px; color: var(--muted); text-transform: uppercase; letter-spacing: .5px; }
+.field input, .field select, .field textarea { background: var(--surface); border: 1px solid var(--border); color: var(--text); font-family: 'DM Sans', sans-serif; font-size: 14px; padding: 9px 12px; border-radius: 8px; outline: none; transition: border-color .15s; }
+.field input:focus, .field select:focus, .field textarea:focus { border-color: var(--amber-dim); }
+.field textarea { min-height: 70px; resize: vertical; }
+select option { background: var(--surface); }
+.btn { font-family: 'DM Sans', sans-serif; font-weight: 500; border: none; cursor: pointer; border-radius: 8px; padding: 10px 18px; font-size: 14px; transition: all .15s; }
+.btn-primary { background: var(--amber); color: #0d0d0b; }
+.btn-primary:hover { background: #f0b040; }
+.btn-secondary { background: var(--surface); color: var(--text); border: 1px solid var(--border); }
+.btn-secondary:hover { border-color: var(--amber-dim); }
+.btn-sm { padding: 6px 12px; font-size: 12px; }
+.btn-icon { background: none; border: none; cursor: pointer; color: var(--muted); font-size: 16px; padding: 4px 8px; border-radius: 6px; }
+.btn-icon:hover { color: var(--text); background: var(--surface); }
+.list-item { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 14px 16px; margin-bottom: 8px; display: flex; justify-content: space-between; align-items: center; gap: 12px; }
+.list-item:hover { border-color: var(--amber-dim); }
+.item-main { flex: 1; min-width: 0; }
+.item-title { font-weight: 600; font-size: 14px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.item-sub { font-size: 12px; color: var(--muted); margin-top: 2px; }
+.item-amount { font-family: 'DM Serif Display', serif; font-size: 17px; color: var(--amber); white-space: nowrap; }
+.status-badge { font-size: 10px; font-weight: 600; padding: 3px 8px; border-radius: 20px; text-transform: uppercase; letter-spacing: .5px; }
+.status-paid { background: #1a3020; color: var(--green); }
+.status-unpaid { background: #2a1a00; color: var(--amber); }
+.status-overdue { background: #2a1010; color: var(--red); }
+.setup-wrap { max-width: 580px; margin: 40px auto; padding: 0 16px 60px; }
+.setup-logo { font-family: 'DM Serif Display', serif; font-size: 36px; color: var(--amber); margin-bottom: 6px; }
+.setup-sub { color: var(--muted); margin-bottom: 28px; line-height: 1.6; }
+.receipt-zone { border: 2px dashed var(--border); border-radius: 10px; padding: 24px; text-align: center; cursor: pointer; transition: border-color .15s; }
+.receipt-zone:hover { border-color: var(--amber-dim); background: #1a1810; }
+.receipt-zone input { display: none; }
+.ai-result { background: var(--surface); border: 1px solid var(--amber-dim); border-radius: 8px; padding: 14px; margin-top: 12px; font-size: 13px; }
+.gd-status { font-size: 12px; display: flex; align-items: center; gap: 6px; }
+.gd-dot { width: 7px; height: 7px; border-radius: 50%; flex-shrink: 0; }
+.gd-connected { background: var(--green); }
+.gd-disconnected { background: var(--red); }
+.loading { display: flex; align-items: center; gap: 10px; color: var(--muted); padding: 20px 0; }
+.spinner { width: 18px; height: 18px; border: 2px solid var(--border); border-top-color: var(--amber); border-radius: 50%; animation: spin .7s linear infinite; flex-shrink: 0; }
+@keyframes spin { to { transform: rotate(360deg); } }
+.empty { text-align: center; color: var(--muted); padding: 40px 0; }
+.empty-icon { font-size: 32px; margin-bottom: 10px; }
+.section-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; flex-wrap: wrap; gap: 8px; }
+.section-title { font-family: 'DM Serif Display', serif; font-size: 18px; }
+.row-actions { display: flex; gap: 4px; }
+.logo-zone { border: 2px dashed var(--border); border-radius: 10px; padding: 20px; text-align: center; cursor: pointer; transition: border-color .15s; }
+.logo-zone:hover { border-color: var(--amber-dim); }
+
+/* Invoice print styles */
+.invoice-preview { background: #fff; color: #111; border-radius: 10px; padding: 36px; font-family: 'DM Sans', sans-serif; }
+.inv-table { width: 100%; border-collapse: collapse; margin: 20px 0; }
+.inv-table th { text-align: left; padding: 9px 12px; font-size: 11px; text-transform: uppercase; letter-spacing: .5px; }
+.inv-table td { padding: 11px 12px; border-bottom: 1px solid #f0ede8; font-size: 13px; }
+.inv-total-row { display: flex; justify-content: space-between; padding: 4px 0; font-size: 13px; color: #444; }
+
+@media print {
+  body { background: white; }
+  .app > *:not(#print-area) { display: none !important; }
+  #print-area { display: block !important; }
+  .no-print { display: none !important; }
+  .invoice-preview { box-shadow: none; border-radius: 0; padding: 0; }
+}
+@media (max-width: 600px) {
+  .form-grid { grid-template-columns: 1fr; }
+}
+</style>
+</head>
+<body>
+<div id="root"></div>
+
+<script>
+// ══════════════════════════════════════════════
+// GOOGLE DRIVE CONFIG
+// ══════════════════════════════════════════════
+const GD_CLIENT_ID = ''; // filled from settings
+const GD_SCOPES = 'https://www.googleapis.com/auth/drive.file';
+const APP_FOLDER_NAME = 'SoleTraderDashboard';
+let gdToken = null;
+let gdFolderId = null;
+
+// ══════════════════════════════════════════════
+// HELPERS
+// ══════════════════════════════════════════════
+function getTaxYear(date = new Date()) {
+  const d = new Date(date);
+  const y = d.getFullYear();
+  return d >= new Date(y, 3, 6) ? `${y}_${y+1}` : `${y-1}_${y}`;
+}
+function taxLabel(ty) {
+  if (!ty) return '';
+  const [a, b] = ty.split('_');
+  return `${a}/${String(b).slice(2)}`;
+}
+function fmt(n, cur='GBP') {
+  return ({GBP:'£',USD:'$',EUR:'€'}[cur]||'£') + parseFloat(n||0).toFixed(2);
+}
+function fmtDate(d) {
+  return d ? new Date(d).toLocaleDateString('en-GB',{day:'2-digit',month:'short',year:'numeric'}) : '';
+}
+function today() { return new Date().toISOString().split('T')[0]; }
+function nextInvNum(invs, prefix='INV') {
+  const nums = invs.map(i => parseInt((i.number||'').replace(/\D/g,''))).filter(Boolean);
+  return `${prefix}-${String(nums.length ? Math.max(...nums)+1 : 1).padStart(4,'0')}`;
+}
+function uid() { return Date.now().toString(36) + Math.random().toString(36).slice(2); }
+
+// ══════════════════════════════════════════════
+// GOOGLE DRIVE API
+// ══════════════════════════════════════════════
+async function gdSignIn(clientId) {
+  return new Promise((resolve, reject) => {
+    const client = google.accounts.oauth2.initTokenClient({
+      client_id: clientId,
+      scope: GD_SCOPES,
+      callback: (res) => {
+        if (res.error) reject(res);
+        else { gdToken = res.access_token; resolve(res); }
+      }
+    });
+    client.requestAccessToken();
+  });
+}
+
+async function gdReq(path, opts={}) {
+  const r = await fetch('https://www.googleapis.com/'+path, {
+    ...opts,
+    headers: { Authorization: `Bearer ${gdToken}`, ...(opts.headers||{}) }
+  });
+  if (!r.ok) throw new Error(await r.text());
+  return r.status === 204 ? null : r.json();
+}
+
+async function gdEnsureFolder() {
+  if (gdFolderId) return gdFolderId;
+  const res = await gdReq(`drive/v3/files?q=name='${APP_FOLDER_NAME}' and mimeType='application/vnd.google-apps.folder' and trashed=false&fields=files(id)`);
+  if (res.files.length) { gdFolderId = res.files[0].id; return gdFolderId; }
+  const f = await gdReq('drive/v3/files', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ name: APP_FOLDER_NAME, mimeType: 'application/vnd.google-apps.folder' })
+  });
+  gdFolderId = f.id;
+  return gdFolderId;
+}
+
+async function gdReadJSON(filename) {
+  try {
+    const folderId = await gdEnsureFolder();
+    const res = await gdReq(`drive/v3/files?q=name='${filename}' and '${folderId}' in parents and trashed=false&fields=files(id)`);
+    if (!res.files.length) return null;
+    const content = await fetch(`https://www.googleapis.com/drive/v3/files/${res.files[0].id}?alt=media`, {
+      headers: { Authorization: `Bearer ${gdToken}` }
+    });
+    return content.json();
+  } catch { return null; }
+}
+
+async function gdWriteJSON(filename, data) {
+  const folderId = await gdEnsureFolder();
+  const res = await gdReq(`drive/v3/files?q=name='${filename}' and '${folderId}' in parents and trashed=false&fields=files(id)`);
+  const content = JSON.stringify(data);
+  const blob = new Blob([content], { type: 'application/json' });
+  const form = new FormData();
+  if (res.files.length) {
+    form.append('metadata', new Blob([JSON.stringify({})], {type:'application/json'}));
+    form.append('file', blob);
+    await fetch(`https://www.googleapis.com/upload/drive/v3/files/${res.files[0].id}?uploadType=multipart`, {
+      method: 'PATCH', headers: { Authorization: `Bearer ${gdToken}` }, body: form
+    });
+  } else {
+    form.append('metadata', new Blob([JSON.stringify({ name: filename, parents: [folderId] })], {type:'application/json'}));
+    form.append('file', blob);
+    await fetch('https://www.googleapis.com/upload/drive/v3/files?uploadType=multipart', {
+      method: 'POST', headers: { Authorization: `Bearer ${gdToken}` }, body: form
+    });
+  }
+}
+
+async function gdUploadFile(filename, blob, subfolder='receipts') {
+  const folderId = await gdEnsureFolder();
+  // ensure subfolder
+  let subRes = await gdReq(`drive/v3/files?q=name='${subfolder}' and '${folderId}' in parents and mimeType='application/vnd.google-apps.folder' and trashed=false&fields=files(id)`);
+  let subId;
+  if (subRes.files.length) subId = subRes.files[0].id;
+  else {
+    const f = await gdReq('drive/v3/files', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({name:subfolder, mimeType:'application/vnd.google-apps.folder', parents:[folderId]}) });
+    subId = f.id;
+  }
+  const form = new FormData();
+  form.append('metadata', new Blob([JSON.stringify({ name: filename, parents: [subId] })], {type:'application/json'}));
+  form.append('file', blob);
+  await fetch('https://www.googleapis.com/upload/drive/v3/files?uploadType=multipart', {
+    method: 'POST', headers: { Authorization: `Bearer ${gdToken}` }, body: form
+  });
+}
+
+// ══════════════════════════════════════════════
+// CLAUDE AI — RECEIPT SCANNING
+// ══════════════════════════════════════════════
+async function extractReceiptAI(base64) {
+  const res = await fetch('https://api.anthropic.com/v1/messages', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      model: 'claude-sonnet-4-20250514',
+      max_tokens: 500,
+      messages: [{ role: 'user', content: [
+        { type: 'image', source: { type: 'base64', media_type: 'image/jpeg', data: base64 } },
+        { type: 'text', text: `Extract receipt details. Reply ONLY valid JSON, no markdown:
+{"supplier":"","date":"YYYY-MM-DD","amount":"","currency":"GBP","category":"","description":""}
+Amount as number string without symbol. Category: one of Travel, Office Supplies, Software/Subscriptions, Equipment, Marketing, Professional Services, Meals, Phone/Internet, Other. If date unclear use today ${today()}.` }
+      ]}]
+    })
+  });
+  const data = await res.json();
+  const text = (data.content||[]).map(b=>b.text||'').join('');
+  return JSON.parse(text.replace(/```json|```/g,'').trim());
+}
+
+// ══════════════════════════════════════════════
+// STATE
+// ══════════════════════════════════════════════
+let S = {
+  screen: 'loading',
+  tab: 'invoices',
+  settings: null,
+  invoices: [],
+  expenses: [],
+  clients: [],
+  gdConnected: false,
+  showNewInvoice: false,
+  showNewExpense: false,
+  showNewClient: false,
+  editClientId: null,
+  viewInvoice: null,
+  loading: false,
+  loadingMsg: ''
+};
+function set(patch) { Object.assign(S, patch); render(); }
+
+// ══════════════════════════════════════════════
+// PERSISTENCE
+// ══════════════════════════════════════════════
+function lsGet(k) { try { return JSON.parse(localStorage.getItem(k)); } catch { return null; } }
+function lsSet(k,v) { localStorage.setItem(k, JSON.stringify(v)); }
+
+async function syncSave(key, data) {
+  lsSet(key, data);
+  if (S.gdConnected) {
+    gdWriteJSON(key+'.json', data).catch(()=>{});
+  }
+}
+
+async function loadFromGD() {
+  set({ loading: true, loadingMsg: 'Loading from Google Drive…' });
+  try {
+    const inv = await gdReadJSON('invoices.json');
+    const exp = await gdReadJSON('expenses.json');
+    const cli = await gdReadJSON('clients.json');
+    set({ invoices: inv||[], expenses: exp||[], clients: cli||[], loading: false });
+  } catch { set({ loading: false }); }
+}
+
+// ══════════════════════════════════════════════
+// INIT
+// ══════════════════════════════════════════════
+async function init() {
+  const settings = lsGet('std_settings');
+  const invoices = lsGet('invoices') || [];
+  const expenses = lsGet('expenses') || [];
+  const clients = lsGet('clients') || [];
+  if (!settings) { set({ screen: 'setup' }); return; }
+  set({ settings, invoices, expenses, clients, screen: 'dashboard' });
+}
+
+// ══════════════════════════════════════════════
+// RENDER ROUTER
+// ══════════════════════════════════════════════
+function render() {
+  const root = document.getElementById('root');
+  if (S.screen === 'loading') { root.innerHTML = `<div style="display:flex;align-items:center;justify-content:center;height:100vh;color:var(--amber);font-family:'DM Serif Display',serif;font-size:22px">Loading…</div>`; return; }
+  if (S.screen === 'setup') { root.innerHTML = renderSetup(); return; }
+  root.innerHTML = renderDashboard();
+  bindDashboard();
+}
+
+// ══════════════════════════════════════════════
+// SETUP SCREEN
+// ══════════════════════════════════════════════
+let pendingLogo = null;
+
+function renderSetup() {
+  const s = S.settings || {};
+  return `<div class="setup-wrap">
+    <div class="setup-logo">Sole Trader Hub</div>
+    <div class="setup-sub">Your free admin system — invoices, expenses &amp; receipts, all in one place.</div>
+
+    <div class="card">
+      <div class="card-title">🏢 Business Details</div>
+      <div class="form-grid">
+        <div class="field"><label>Business / Trading Name</label><input id="s-biz" value="${s.businessName||''}" placeholder="Jane Smith Consulting"></div>
+        <div class="field"><label>Currency</label>
+          <select id="s-cur">
+            <option value="GBP" ${s.currency==='GBP'?'selected':''}>£ GBP</option>
+            <option value="EUR" ${s.currency==='EUR'?'selected':''}>€ EUR</option>
+            <option value="USD" ${s.currency==='USD'?'selected':''}>$ USD</option>
+          </select>
+        </div>
+        <div class="field"><label>Invoice Prefix</label><input id="s-prefix" value="${s.invPrefix||'INV'}" placeholder="INV"></div>
+        <div class="field"><label>VAT Registered?</label>
+          <select id="s-vat">
+            <option value="no" ${s.vat!=='yes'?'selected':''}>No</option>
+            <option value="yes" ${s.vat==='yes'?'selected':''}>Yes — 20%</option>
+          </select>
+        </div>
+        <div class="field" style="grid-column:1/-1"><label>Your Address</label><textarea id="s-addr" placeholder="123 High Street&#10;London EC1A 1BB">${s.address||''}</textarea></div>
+        <div class="field"><label>Email</label><input id="s-email" type="email" value="${s.email||''}" placeholder="you@email.com"></div>
+        <div class="field"><label>Phone</label><input id="s-phone" value="${s.phone||''}" placeholder="+44 7700 000000"></div>
+        <div class="field"><label>Website</label><input id="s-web" value="${s.website||''}" placeholder="www.yourbusiness.co.uk"></div>
+        <div class="field"><label>UTR / Company Reg (optional)</label><input id="s-reg" value="${s.regNum||''}" placeholder="UTR: 1234567890"></div>
+        <div class="field"><label>Invoice Accent Colour</label><input id="s-color" type="color" value="${s.accentColor||'#1a6eb5'}" style="height:40px;padding:4px 8px;cursor:pointer"></div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">🏦 Bank Details <span style="font-size:11px;color:var(--muted);font-family:'DM Sans',sans-serif">(shown on every invoice)</span></div>
+      <div class="form-grid">
+        <div class="field"><label>Account Name</label><input id="s-bankname" value="${s.bankName||''}" placeholder="Jane Smith"></div>
+        <div class="field"><label>Sort Code</label><input id="s-sort" value="${s.sortCode||''}" placeholder="00-00-00"></div>
+        <div class="field"><label>Account Number</label><input id="s-acc" value="${s.accountNum||''}" placeholder="00000000"></div>
+        <div class="field"><label>Bank Name</label><input id="s-bank" value="${s.bankBrand||''}" placeholder="Monzo, Barclays…"></div>
+        <div class="field" style="grid-column:1/-1"><label>Additional Payment Info (optional)</label><input id="s-payref" value="${s.payRef||''}" placeholder="Please use invoice number as reference"></div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">🖼 Company Logo</div>
+      <div class="logo-zone" onclick="document.getElementById('logo-inp').click()">
+        <input type="file" id="logo-inp" accept="image/*" style="display:none" onchange="handleLogoUpload(event)">
+        <div id="logo-preview">
+          ${s.logo ? `<img src="${s.logo}" style="max-height:80px;max-width:200px;object-fit:contain;border-radius:6px"><div style="color:var(--muted);font-size:11px;margin-top:8px">Tap to change</div>` : `<div style="color:var(--muted)">🖼 Tap to upload logo<br><span style="font-size:11px">PNG or JPG — appears on every invoice</span></div>`}
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">☁️ Google Drive Backup <span style="font-size:11px;color:var(--muted);font-family:'DM Sans',sans-serif">(optional)</span></div>
+      <p style="color:var(--muted);font-size:13px;line-height:1.6;margin-bottom:16px">Connect Google Drive and everything saves automatically — invoices, expenses and receipt photos. You only need a Gmail account.</p>
+      <div class="field"><label>Google Client ID</label><input id="s-gid" value="${s.googleClientId||''}" placeholder="xxxxxxx.apps.googleusercontent.com"></div>
+      <p style="color:var(--muted);font-size:12px;margin-top:8px">Get a free Client ID at <a href="https://console.cloud.google.com" target="_blank" style="color:var(--amber)">console.cloud.google.com</a> → APIs &amp; Services → Credentials → OAuth 2.0 Client ID (Web). Or skip and use it without backup.</p>
+    </div>
+
+    <button class="btn btn-primary" style="width:100%;padding:14px;font-size:16px" onclick="saveSetup()">Save &amp; Start →</button>
+  </div>`;
+}
+
+function handleLogoUpload(evt) {
+  const file = evt.target.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = e => {
+    pendingLogo = e.target.result;
+    document.getElementById('logo-preview').innerHTML = `<img src="${pendingLogo}" style="max-height:80px;max-width:200px;object-fit:contain;border-radius:6px"><div style="color:var(--muted);font-size:11px;margin-top:8px">Tap to change</div>`;
+  };
+  reader.readAsDataURL(file);
+}
+
+async function saveSetup() {
+  const settings = {
+    businessName: document.getElementById('s-biz').value || 'My Business',
+    currency: document.getElementById('s-cur').value,
+    invPrefix: document.getElementById('s-prefix').value || 'INV',
+    vat: document.getElementById('s-vat').value,
+    address: document.getElementById('s-addr').value,
+    email: document.getElementById('s-email').value,
+    phone: document.getElementById('s-phone').value,
+    website: document.getElementById('s-web').value,
+    regNum: document.getElementById('s-reg').value,
+    accentColor: document.getElementById('s-color').value || '#1a6eb5',
+    bankName: document.getElementById('s-bankname').value,
+    sortCode: document.getElementById('s-sort').value,
+    accountNum: document.getElementById('s-acc').value,
+    bankBrand: document.getElementById('s-bank').value,
+    payRef: document.getElementById('s-payref').value,
+    googleClientId: document.getElementById('s-gid').value.trim(),
+    logo: pendingLogo || (S.settings && S.settings.logo) || null
+  };
+  lsSet('std_settings', settings);
+  set({ settings, screen: 'dashboard' });
+
+  if (settings.googleClientId) {
+    try {
+      await gdSignIn(settings.googleClientId);
+      set({ gdConnected: true });
+      await loadFromGD();
+    } catch(e) {
+      alert('Google Drive connection failed. You can still use the app — data saves locally.');
+    }
+  }
+}
+
+// ══════════════════════════════════════════════
+// DASHBOARD
+// ══════════════════════════════════════════════
+function renderDashboard() {
+  const { settings, invoices, expenses, tab, gdConnected, loading, loadingMsg } = S;
+  const ty = getTaxYear();
+  const tyLabel = taxLabel(ty);
+  const tyExp = expenses.filter(e => getTaxYear(e.date) === ty);
+  const totalExp = tyExp.reduce((s,e) => s+parseFloat(e.amount||0), 0);
+  const unpaid = invoices.filter(i => i.status !== 'paid');
+  const totalUnpaid = unpaid.reduce((s,i) => s+parseFloat(i.total||0), 0);
+
+  return `<div class="app">
+    <header class="header">
+      <div>
+        ${settings.logo ? `<img src="${settings.logo}" style="max-height:38px;max-width:120px;object-fit:contain;display:block;margin-bottom:4px">` : `<div class="biz-name">${settings.businessName}</div>`}
+        <div class="tax-pill">Tax Year ${tyLabel}</div>
+      </div>
+      <div class="stat-row">
+        <div class="stat-chip"><span>Unpaid</span><strong style="color:var(--amber)">${fmt(totalUnpaid,settings.currency)}</strong></div>
+        <div class="stat-chip"><span>Expenses ${tyLabel}</span><strong style="color:var(--red)">${fmt(totalExp,settings.currency)}</strong></div>
+        <div class="gd-status">
+          <div class="gd-dot ${gdConnected?'gd-connected':'gd-disconnected'}"></div>
+          <span style="color:var(--muted)">${gdConnected?'Google Drive':'Local only'}</span>
+          ${!gdConnected && settings.googleClientId ? `<button class="btn btn-sm btn-secondary" onclick="connectGD()">Connect</button>` : ''}
+        </div>
+        <button class="btn-icon" onclick="openSettings()" title="Settings">⚙</button>
+      </div>
+    </header>
+
+    <nav class="nav">
+      <button class="nav-btn ${tab==='invoices'?'active':''}" onclick="setTab('invoices')">📄 Invoices</button>
+      <button class="nav-btn ${tab==='expenses'?'active':''}" onclick="setTab('expenses')">🧾 Expenses</button>
+      <button class="nav-btn ${tab==='clients'?'active':''}" onclick="setTab('clients')">👥 Clients</button>
+    </nav>
+
+    <main class="main">
+      ${loading ? `<div class="loading"><div class="spinner"></div>${loadingMsg}</div>` : ''}
+      ${tab==='invoices' ? renderInvoicesTab() : tab==='expenses' ? renderExpensesTab() : renderClientsTab()}
+    </main>
+  </div>`;
+}
+
+// ══════════════════════════════════════════════
+// INVOICES TAB
+// ══════════════════════════════════════════════
+function renderInvoicesTab() {
+  if (S.viewInvoice) return renderInvoicePreview(S.viewInvoice);
+  if (S.showNewInvoice) return renderNewInvoiceForm();
+  const sorted = [...S.invoices].sort((a,b) => new Date(b.date)-new Date(a.date));
+  return `<div>
+    <div class="section-header">
+      <div class="section-title">Invoices</div>
+      <button class="btn btn-primary" onclick="startNewInvoice()">+ New Invoice</button>
+    </div>
+    ${sorted.length===0 ? `<div class="empty"><div class="empty-icon">📄</div>No invoices yet — create your first one!</div>` : ''}
+    ${sorted.map(inv => {
+      const overdue = inv.status!=='paid' && inv.dueDate && new Date(inv.dueDate)<new Date();
+      const sc = inv.status==='paid'?'status-paid':overdue?'status-overdue':'status-unpaid';
+      const sl = inv.status==='paid'?'Paid':overdue?'Overdue':'Unpaid';
+      return `<div class="list-item">
+        <div class="item-main">
+          <div class="item-title">${inv.number} — ${inv.clientName}</div>
+          <div class="item-sub">${fmtDate(inv.date)} · Due ${fmtDate(inv.dueDate)}</div>
+        </div>
+        <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap">
+          <span class="status-badge ${sc}">${sl}</span>
+          <div class="item-amount">${fmt(inv.total,S.settings.currency)}</div>
+          <div class="row-actions">
+            <button class="btn-icon" title="View" onclick="viewInv('${inv.id}')">👁</button>
+            <button class="btn-icon" title="Send via Outlook" onclick="sendOutlook('${inv.id}')">✉️</button>
+            ${inv.status!=='paid'?`<button class="btn-icon" title="Mark paid" onclick="markPaid('${inv.id}')">✓</button>`:''}
+            <button class="btn-icon" title="Delete" style="color:var(--red)" onclick="delInvoice('${inv.id}')">✕</button>
+          </div>
+        </div>
+      </div>`;
+    }).join('')}
+  </div>`;
+}
+
+// ── New Invoice Form ──
+let lineItems = [{ desc:'', qty:1, price:'' }];
+
+function renderNewInvoiceForm() {
+  const newNum = nextInvNum(S.invoices, S.settings.invPrefix);
+  const due = new Date(); due.setDate(due.getDate()+30);
+  const clientOptions = S.clients.length
+    ? `<option value="">— Select a saved client or type below —</option>` + S.clients.map(c=>`<option value="${c.id}">${c.name}</option>`).join('')
+    : '';
+  return `<div>
+    <div class="section-header">
+      <div class="section-title">New Invoice</div>
+      <button class="btn btn-secondary" onclick="set({showNewInvoice:false})">← Back</button>
+    </div>
+    ${S.clients.length ? `<div class="card" style="padding:14px 20px">
+      <div class="field"><label>Quick-fill from saved client</label>
+        <select id="fi-client-pick" onchange="autofillClient(this.value)">
+          ${clientOptions}
+        </select>
+      </div>
+    </div>` : ''}
+    <div class="card">
+      <div class="form-grid">
+        <div class="field"><label>Invoice Number</label><input id="fi-num" value="${newNum}" readonly style="color:var(--amber)"></div>
+        <div class="field"><label>Date</label><input id="fi-date" type="date" value="${today()}"></div>
+        <div class="field"><label>Client Name</label><input id="fi-client" placeholder="Acme Ltd"></div>
+        <div class="field"><label>Due Date</label><input id="fi-due" type="date" value="${due.toISOString().split('T')[0]}"></div>
+        <div class="field" style="grid-column:1/-1"><label>Client Address</label><textarea id="fi-caddr" placeholder="Client address"></textarea></div>
+        <div class="field" style="grid-column:1/-1"><label>Client Email (for sending)</label><input id="fi-cemail" type="email" placeholder="client@email.com"></div>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-title">Line Items</div>
+      <div id="line-items-wrap"></div>
+      <button class="btn btn-secondary btn-sm" style="margin-top:10px" onclick="addLine()">+ Add Item</button>
+      <div style="text-align:right;margin-top:14px">
+        <span id="inv-total-disp" style="font-family:'DM Serif Display',serif;font-size:20px;color:var(--amber)"></span>
+      </div>
+    </div>
+    <div class="card">
+      <div class="field"><label>Additional Notes (optional)</label><textarea id="fi-notes" placeholder="Any extra notes for this invoice…"></textarea></div>
+    </div>
+    <div style="display:flex;gap:10px;justify-content:flex-end">
+      <button class="btn btn-secondary" onclick="set({showNewInvoice:false})">Cancel</button>
+      <button class="btn btn-primary" onclick="saveInvoice()">Save &amp; Preview →</button>
+    </div>
+  </div>`;
+}
+
+function bindInvoiceForm() {
+  const wrap = document.getElementById('line-items-wrap');
+  if (!wrap) return;
+  wrap.innerHTML = lineItems.map((item,i) => `
+    <div style="display:grid;grid-template-columns:1fr 70px 110px 34px;gap:8px;margin-bottom:8px;align-items:end">
+      <div class="field"><label>${i===0?'Description':''}</label><input value="${item.desc}" oninput="lineItems[${i}].desc=this.value" placeholder="Service / product"></div>
+      <div class="field"><label>${i===0?'Qty':''}</label><input type="number" min="1" value="${item.qty}" oninput="lineItems[${i}].qty=this.value;updateTotal()"></div>
+      <div class="field"><label>${i===0?'Unit Price':''}</label><input type="number" step="0.01" value="${item.price}" oninput="lineItems[${i}].price=this.value;updateTotal()" placeholder="0.00"></div>
+      <button class="btn-icon" style="color:var(--red);padding-bottom:7px" onclick="removeLine(${i})">✕</button>
+    </div>`).join('');
+  updateTotal();
+}
+function addLine() { lineItems.push({desc:'',qty:1,price:''}); bindInvoiceForm(); }
+function removeLine(i) { lineItems.splice(i,1); if(!lineItems.length) lineItems=[{desc:'',qty:1,price:''}]; bindInvoiceForm(); }
+function updateTotal() {
+  const sub = lineItems.reduce((s,l) => s+parseFloat(l.qty||0)*parseFloat(l.price||0), 0);
+  const vat = S.settings.vat==='yes' ? sub*0.2 : 0;
+  const el = document.getElementById('inv-total-disp');
+  if (el) el.textContent = `Total: ${fmt(sub+vat, S.settings.currency)}`;
+}
+
+async function saveInvoice() {
+  const sub = lineItems.reduce((s,l) => s+parseFloat(l.qty||0)*parseFloat(l.price||0), 0);
+  const vat = S.settings.vat==='yes' ? sub*0.2 : 0;
+  const inv = {
+    id: uid(),
+    number: document.getElementById('fi-num').value,
+    date: document.getElementById('fi-date').value,
+    dueDate: document.getElementById('fi-due').value,
+    clientName: document.getElementById('fi-client').value,
+    clientAddress: document.getElementById('fi-caddr').value,
+    clientEmail: document.getElementById('fi-cemail').value,
+    notes: document.getElementById('fi-notes').value,
+    items: [...lineItems],
+    subtotal: sub, vat, total: sub+vat,
+    status: 'unpaid'
+  };
+  const next = [...S.invoices, inv];
+  S.invoices = next; lsSet('invoices', next);
+  if (S.gdConnected) gdWriteJSON('invoices.json', next).catch(()=>{});
+  lineItems = [{desc:'',qty:1,price:''}];
+  set({ showNewInvoice: false, viewInvoice: inv });
+}
+
+// ── Invoice Preview ──
+function renderInvoicePreview(inv) {
+  const s = S.settings;
+  const cur = s.currency;
+  const ac = s.accentColor || '#1a6eb5';
+  const hasBankDetails = s.bankName || s.sortCode || s.accountNum;
+
+  return `<div>
+    <div class="section-header no-print">
+      <div class="section-title">Invoice ${inv.number}</div>
+      <div style="display:flex;gap:8px;flex-wrap:wrap">
+        <button class="btn btn-secondary" onclick="set({viewInvoice:null})">← Back</button>
+        <button class="btn btn-secondary" onclick="sendOutlook('${inv.id}')">✉️ Send via Outlook</button>
+        <button class="btn btn-primary" onclick="printInvoice(S.viewInvoice)">🖨 Print / PDF</button>
+      </div>
+    </div>
+
+    <div class="invoice-preview" id="inv-print">
+
+      <!-- Accent bar -->
+      <div style="height:6px;background:${ac};border-radius:4px;margin-bottom:32px"></div>
+
+      <!-- Header row: logo + biz info LEFT | invoice meta RIGHT -->
+      <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:28px;gap:20px">
+        <div>
+          ${s.logo ? `<img src="${s.logo}" style="max-height:65px;max-width:180px;object-fit:contain;display:block;margin-bottom:10px">` : ''}
+          <div style="font-size:18px;font-weight:700;color:#111;font-family:'DM Serif Display',serif">${s.businessName}</div>
+          <div style="font-size:12px;color:#555;line-height:1.8;margin-top:4px">
+            ${s.address ? s.address.replace(/\n/g,'<br>') : ''}
+            ${s.email ? `<br>${s.email}` : ''}
+            ${s.phone ? `<br>${s.phone}` : ''}
+            ${s.website ? `<br>${s.website}` : ''}
+            ${s.regNum ? `<br><span style="color:#999">${s.regNum}</span>` : ''}
+          </div>
+        </div>
+        <div style="text-align:right;flex-shrink:0">
+          <div style="font-size:38px;font-weight:800;color:${ac};letter-spacing:-1px;font-family:'DM Serif Display',serif">INVOICE</div>
+          <div style="font-size:13px;color:#444;margin-top:8px;line-height:1.9">
+            <strong style="font-size:15px;color:#111">${inv.number}</strong><br>
+            <span style="color:#888">Issued:</span> ${fmtDate(inv.date)}<br>
+            <span style="color:#888">Due:</span> ${fmtDate(inv.dueDate)}<br>
+            <span style="display:inline-block;margin-top:4px;padding:3px 12px;background:${inv.status==='paid'?'#e8f5ee':'#fff8ec'};color:${inv.status==='paid'?'#2e7d50':ac};border:1px solid ${inv.status==='paid'?'#b2dfcc':ac+'66'};border-radius:20px;font-size:11px;font-weight:700">${inv.status==='paid'?'✓ PAID':'PAYMENT DUE'}</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Bill To -->
+      <div style="background:#f8f7f4;border-left:4px solid ${ac};padding:12px 16px;border-radius:0 8px 8px 0;margin-bottom:24px">
+        <div style="font-size:10px;text-transform:uppercase;letter-spacing:1px;color:#aaa;margin-bottom:4px">Bill To</div>
+        <div style="font-size:14px;font-weight:700;color:#111">${inv.clientName}</div>
+        ${inv.clientAddress ? `<div style="font-size:12px;color:#555;margin-top:2px;line-height:1.6">${inv.clientAddress.replace(/\n/g,'<br>')}</div>` : ''}
+      </div>
+
+      <!-- Line Items -->
+      <table class="inv-table">
+        <thead>
+          <tr style="background:${ac}">
+            <th style="color:#fff;border-radius:6px 0 0 0">Description</th>
+            <th style="color:#fff;text-align:right">Qty</th>
+            <th style="color:#fff;text-align:right">Unit Price</th>
+            <th style="color:#fff;text-align:right;border-radius:0 6px 0 0">Total</th>
+          </tr>
+        </thead>
+        <tbody>
+          ${inv.items.map((item,i) => `<tr style="${i%2===1?'background:#fafaf8':''}">
+            <td>${item.desc}</td>
+            <td style="text-align:right;color:#555">${item.qty}</td>
+            <td style="text-align:right;color:#555">${fmt(item.price,cur)}</td>
+            <td style="text-align:right;font-weight:600;color:#111">${fmt(parseFloat(item.qty||0)*parseFloat(item.price||0),cur)}</td>
+          </tr>`).join('')}
+        </tbody>
+      </table>
+
+      <!-- Totals -->
+      <div style="display:flex;justify-content:flex-end;margin-bottom:28px">
+        <div style="min-width:240px">
+          <div class="inv-total-row"><span>Subtotal</span><span>${fmt(inv.subtotal,cur)}</span></div>
+          ${inv.vat>0?`<div class="inv-total-row"><span>VAT (20%)</span><span>${fmt(inv.vat,cur)}</span></div>`:''}
+          <div style="border-top:2px solid ${ac};margin:8px 0"></div>
+          <div class="inv-total-row" style="font-size:18px;font-weight:700;color:${ac}"><span>Total Due</span><span>${fmt(inv.total,cur)}</span></div>
+        </div>
+      </div>
+
+      <!-- Bank Details + Notes -->
+      <div style="display:grid;grid-template-columns:${hasBankDetails&&inv.notes?'1fr 1fr':'1fr'};gap:24px;border-top:1px solid #eee;padding-top:20px;font-size:12px;color:#555;line-height:1.8">
+        ${hasBankDetails ? `<div>
+          <div style="font-size:10px;text-transform:uppercase;letter-spacing:1px;color:#aaa;margin-bottom:6px">Payment Details</div>
+          ${s.bankBrand ? `<div style="font-weight:600;color:#111">${s.bankBrand}</div>` : ''}
+          ${s.bankName ? `<div>Account Name: <strong style="color:#111">${s.bankName}</strong></div>` : ''}
+          ${s.sortCode ? `<div>Sort Code: <strong style="color:#111">${s.sortCode}</strong></div>` : ''}
+          ${s.accountNum ? `<div>Account No: <strong style="color:#111">${s.accountNum}</strong></div>` : ''}
+          ${s.payRef ? `<div style="margin-top:4px;color:#888">${s.payRef}</div>` : ''}
+        </div>` : ''}
+        ${inv.notes ? `<div>
+          <div style="font-size:10px;text-transform:uppercase;letter-spacing:1px;color:#aaa;margin-bottom:6px">Notes</div>
+          ${inv.notes.replace(/\n/g,'<br>')}
+        </div>` : ''}
+      </div>
+
+      <!-- Footer -->
+      <div style="height:4px;background:${ac};border-radius:4px;margin-top:28px;opacity:0.35"></div>
+      <div style="text-align:center;font-size:11px;color:#bbb;margin-top:8px">Thank you for your business</div>
+    </div>
+  </div>`;
+}
+
+// ══════════════════════════════════════════════
+// EXPENSES TAB
+// ══════════════════════════════════════════════
+let receiptBase64 = null;
+let receiptBlob = null;
+
+function renderExpensesTab() {
+  if (S.showNewExpense) return renderNewExpenseForm();
+  const ty = getTaxYear();
+  const tyExp = S.expenses.filter(e => getTaxYear(e.date)===ty);
+  const byCat = {};
+  tyExp.forEach(e => { byCat[e.category]=(byCat[e.category]||0)+parseFloat(e.amount||0); });
+  const sorted = [...S.expenses].sort((a,b) => new Date(b.date)-new Date(a.date));
+
+  return `<div>
+    <div class="section-header">
+      <div class="section-title">Expenses</div>
+      <div style="display:flex;gap:8px">
+        <button class="btn btn-secondary btn-sm" onclick="exportCSV()">⬇ CSV</button>
+        <button class="btn btn-primary" onclick="set({showNewExpense:true})">+ Add Expense</button>
+      </div>
+    </div>
+    ${Object.keys(byCat).length ? `<div class="card"><div class="card-title">Tax Year ${taxLabel(ty)} Summary</div><div style="display:flex;flex-wrap:wrap;gap:8px">${Object.entries(byCat).sort((a,b)=>b[1]-a[1]).map(([c,a])=>`<div class="stat-chip"><span>${c}</span><strong>${fmt(a,S.settings.currency)}</strong></div>`).join('')}</div></div>` : ''}
+    ${sorted.length===0 ? `<div class="empty"><div class="empty-icon">🧾</div>No expenses yet — scan your first receipt!</div>` : ''}
+    ${sorted.map(exp => `<div class="list-item">
+      <div style="margin-right:10px;flex-shrink:0">
+        ${exp.thumb ? `<img src="${exp.thumb}" style="width:44px;height:44px;object-fit:cover;border-radius:6px;border:1px solid var(--border)">` : `<div style="width:44px;height:44px;background:var(--surface);border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:20px">🧾</div>`}
+      </div>
+      <div class="item-main">
+        <div class="item-title">${exp.supplier||'Unknown'}</div>
+        <div class="item-sub">${fmtDate(exp.date)} · ${exp.category}${exp.description?' · '+exp.description:''}</div>
+      </div>
+      <div style="display:flex;align-items:center;gap:10px">
+        <div class="item-amount">${fmt(exp.amount,exp.currency||S.settings.currency)}</div>
+        <button class="btn-icon" style="color:var(--red)" onclick="delExpense('${exp.id}')">✕</button>
+      </div>
+    </div>`).join('')}
+  </div>`;
+}
+
+function renderNewExpenseForm() {
+  return `<div>
+    <div class="section-header">
+      <div class="section-title">Add Expense</div>
+      <button class="btn btn-secondary" onclick="set({showNewExpense:false})">← Back</button>
+    </div>
+    <div class="card">
+      <div class="card-title">📷 Scan Receipt with AI</div>
+      <div class="receipt-zone" onclick="document.getElementById('rec-inp').click()" ondragover="event.preventDefault()" ondrop="handleReceiptDrop(event)">
+        <input type="file" id="rec-inp" accept="image/*" onchange="handleReceiptFile(event)">
+        <div id="rec-preview-wrap">
+          <div style="color:var(--muted)">📷 Tap to upload receipt<br><span style="font-size:12px">Save from WhatsApp → upload here → AI fills the form</span></div>
+        </div>
+      </div>
+      <div id="ai-status"></div>
+    </div>
+    <div class="card">
+      <div class="form-grid">
+        <div class="field"><label>Supplier</label><input id="e-sup" placeholder="Shell, Adobe…"></div>
+        <div class="field"><label>Date</label><input id="e-date" type="date" value="${today()}"></div>
+        <div class="field"><label>Amount</label><input id="e-amt" type="number" step="0.01" placeholder="0.00"></div>
+        <div class="field"><label>Category</label><select id="e-cat">
+          ${['Travel','Office Supplies','Software/Subscriptions','Equipment','Marketing','Professional Services','Meals','Phone/Internet','Other'].map(c=>`<option>${c}</option>`).join('')}
+        </select></div>
+        <div class="field" style="grid-column:1/-1"><label>Description</label><input id="e-desc" placeholder="Optional note"></div>
+      </div>
+    </div>
+    <div style="display:flex;gap:10px;justify-content:flex-end">
+      <button class="btn btn-secondary" onclick="set({showNewExpense:false})">Cancel</button>
+      <button class="btn btn-primary" onclick="saveExpense()">Save Expense</button>
+    </div>
+  </div>`;
+}
+
+async function handleReceiptFile(evt) { if (evt.target.files[0]) processReceipt(evt.target.files[0]); }
+function handleReceiptDrop(evt) { evt.preventDefault(); if (evt.dataTransfer.files[0]) processReceipt(evt.dataTransfer.files[0]); }
+
+async function processReceipt(file) {
+  receiptBlob = file;
+  const reader = new FileReader();
+  reader.onload = async e => {
+    const dataUrl = e.target.result;
+    receiptBase64 = dataUrl.split(',')[1];
+    const wrap = document.getElementById('rec-preview-wrap');
+    if (wrap) wrap.innerHTML = `<img src="${dataUrl}" style="max-height:180px;border-radius:8px;margin-bottom:8px"><br><span style="font-size:11px;color:var(--muted)">Tap to change</span>`;
+    const status = document.getElementById('ai-status');
+    if (status) status.innerHTML = `<div class="loading"><div class="spinner"></div>AI is reading your receipt…</div>`;
+    try {
+      const r = await extractReceiptAI(receiptBase64);
+      if (r.supplier) document.getElementById('e-sup').value = r.supplier;
+      if (r.date) document.getElementById('e-date').value = r.date;
+      if (r.amount) document.getElementById('e-amt').value = r.amount;
+      if (r.category) { const s=document.getElementById('e-cat'); for(let o of s.options) if(o.value===r.category) s.value=r.category; }
+      if (r.description) document.getElementById('e-desc').value = r.description;
+      if (status) status.innerHTML = `<div class="ai-result">✅ Extracted: <strong>${r.supplier}</strong> · ${fmt(r.amount,r.currency||'GBP')} · ${fmtDate(r.date)}<br><span style="color:var(--muted);font-size:12px">Check and correct if needed</span></div>`;
+    } catch {
+      if (status) status.innerHTML = `<div class="ai-result" style="border-color:var(--red)">⚠ Couldn't read receipt — please fill in manually</div>`;
+    }
+  };
+  reader.readAsDataURL(file);
+}
+
+async function saveExpense() {
+  const id = uid();
+  const dateVal = document.getElementById('e-date').value;
+  const exp = {
+    id, taxYear: getTaxYear(dateVal),
+    supplier: document.getElementById('e-sup').value,
+    date: dateVal,
+    amount: document.getElementById('e-amt').value,
+    currency: S.settings.currency,
+    category: document.getElementById('e-cat').value,
+    description: document.getElementById('e-desc').value,
+    thumb: receiptBase64 ? `data:image/jpeg;base64,${receiptBase64}` : null
+  };
+  if (S.gdConnected && receiptBlob) {
+    const fname = `${exp.taxYear}/${id}_${(exp.supplier||'receipt').replace(/[^a-z0-9]/gi,'_')}.jpg`;
+    gdUploadFile(fname, receiptBlob, 'receipts').catch(()=>{});
+  }
+  receiptBase64 = null; receiptBlob = null;
+  const next = [...S.expenses, exp];
+  S.expenses = next; lsSet('expenses', next);
+  if (S.gdConnected) gdWriteJSON('expenses.json', next).catch(()=>{});
+  set({ showNewExpense: false });
+}
+
+// ══════════════════════════════════════════════
+// ACTIONS
+// ══════════════════════════════════════════════
+function startNewInvoice() { lineItems=[{desc:'',qty:1,price:''}]; set({showNewInvoice:true}); }
+function viewInv(id) { set({ viewInvoice: S.invoices.find(i=>i.id===id) }); }
+
+function printInvoice(inv) {
+  if (!inv) return;
+  // Format date as YYYY-MM-DD
+  const dateStr = inv.date || today();
+  // Clean client name for filename (remove special chars)
+  const clientClean = (inv.clientName||'Client').replace(/[^a-z0-9 ]/gi,'').trim().replace(/\s+/g,'_');
+  const filename = `${inv.number}_${clientClean}_${dateStr}`;
+  const prevTitle = document.title;
+  document.title = filename;
+  window.print();
+  // Restore title after print dialog closes
+  setTimeout(() => { document.title = prevTitle; }, 1000);
+}
+
+function sendOutlook(id) {
+  const inv = S.invoices.find(i=>i.id===id);
+  if (!inv) return;
+  const s = S.settings;
+  const to = inv.clientEmail || '';
+  const subject = encodeURIComponent(`Invoice ${inv.number} from ${s.businessName}`);
+  const body = encodeURIComponent(
+`Dear ${inv.clientName},
+
+Please find attached invoice ${inv.number} for ${fmt(inv.total, s.currency)}, due ${fmtDate(inv.dueDate)}.
+
+${s.bankName||s.sortCode ? `Payment details:\n${s.bankBrand?s.bankBrand+'\n':''}${s.bankName?'Account Name: '+s.bankName+'\n':''}${s.sortCode?'Sort Code: '+s.sortCode+'\n':''}${s.accountNum?'Account Number: '+s.accountNum+'\n':''}${s.payRef?s.payRef+'\n':''}` : ''}
+Please don't hesitate to get in touch if you have any questions.
+
+Kind regards,
+${s.businessName}
+${s.email||''}
+${s.phone||''}`);
+  window.location.href = `mailto:${to}?subject=${subject}&body=${body}`;
+}
+
+async function markPaid(id) {
+  const next = S.invoices.map(i => i.id===id ? {...i,status:'paid'} : i);
+  S.invoices = next; lsSet('invoices',next);
+  if (S.gdConnected) gdWriteJSON('invoices.json',next).catch(()=>{});
+  set({});
+}
+async function delInvoice(id) {
+  if (!confirm('Delete this invoice?')) return;
+  const next = S.invoices.filter(i=>i.id!==id);
+  S.invoices=next; lsSet('invoices',next);
+  if(S.gdConnected) gdWriteJSON('invoices.json',next).catch(()=>{});
+  set({ viewInvoice: null });
+}
+async function delExpense(id) {
+  if (!confirm('Delete this expense?')) return;
+  const next = S.expenses.filter(e=>e.id!==id);
+  S.expenses=next; lsSet('expenses',next);
+  if(S.gdConnected) gdWriteJSON('expenses.json',next).catch(()=>{});
+  set({});
+}
+function exportCSV() {
+  const ty = getTaxYear();
+  const rows=[['Date','Supplier','Category','Description','Amount','Currency','Tax Year']];
+  S.expenses.filter(e=>getTaxYear(e.date)===ty).forEach(e=>{
+    rows.push([e.date,e.supplier,e.category,e.description||'',e.amount,e.currency||S.settings.currency,taxLabel(e.taxYear||ty)]);
+  });
+  const csv=rows.map(r=>r.map(c=>`"${c||''}"`).join(',')).join('\n');
+  const a=document.createElement('a');
+  a.href=URL.createObjectURL(new Blob([csv],{type:'text/csv'}));
+  a.download=`expenses_${ty}.csv`; a.click();
+}
+// ══════════════════════════════════════════════
+// CLIENTS TAB
+// ══════════════════════════════════════════════
+function renderClientsTab() {
+  if (S.showNewClient || S.editClientId) return renderClientForm(S.editClientId);
+  const sorted = [...S.clients].sort((a,b) => a.name.localeCompare(b.name));
+  return `<div>
+    <div class="section-header">
+      <div class="section-title">Clients</div>
+      <button class="btn btn-primary" onclick="set({showNewClient:true,editClientId:null})">+ New Client</button>
+    </div>
+    ${sorted.length===0 ? `<div class="empty"><div class="empty-icon">👥</div>No clients yet — add one and it will auto-fill your invoices!</div>` : ''}
+    ${sorted.map(c => {
+      const clientInvs = S.invoices.filter(i => i.clientId===c.id || i.clientName===c.name);
+      const totalBilled = clientInvs.reduce((s,i)=>s+parseFloat(i.total||0),0);
+      const unpaidInvs = clientInvs.filter(i=>i.status!=='paid');
+      return `<div class="list-item">
+        <div style="width:40px;height:40px;border-radius:50%;background:${c.color||'var(--amber-dim)'};display:flex;align-items:center;justify-content:center;font-size:16px;font-weight:700;color:#fff;flex-shrink:0">
+          ${c.name.charAt(0).toUpperCase()}
+        </div>
+        <div class="item-main" style="margin-left:12px">
+          <div class="item-title">${c.name}</div>
+          <div class="item-sub">${c.email||''}${c.email&&c.phone?' · ':''}${c.phone||''}</div>
+          <div class="item-sub" style="margin-top:2px">
+            ${clientInvs.length} invoice${clientInvs.length!==1?'s':''} · Total billed: ${fmt(totalBilled,S.settings.currency)}
+            ${unpaidInvs.length ? `· <span style="color:var(--amber)">${unpaidInvs.length} unpaid</span>` : ''}
+          </div>
+        </div>
+        <div class="row-actions">
+          <button class="btn-icon" title="New invoice for this client" onclick="invoiceForClient('${c.id}')">📄</button>
+          <button class="btn-icon" title="Edit" onclick="set({editClientId:'${c.id}',showNewClient:true})">✏️</button>
+          <button class="btn-icon" title="Delete" style="color:var(--red)" onclick="delClient('${c.id}')">✕</button>
+        </div>
+      </div>`;
+    }).join('')}
+  </div>`;
+}
+
+function renderClientForm(editId) {
+  const c = editId ? S.clients.find(cl=>cl.id===editId) : {};
+  const colors = ['#1a6eb5','#e8a030','#4caf7d','#e05555','#9b59b6','#e67e22','#1abc9c','#e91e63'];
+  return `<div>
+    <div class="section-header">
+      <div class="section-title">${editId?'Edit Client':'New Client'}</div>
+      <button class="btn btn-secondary" onclick="set({showNewClient:false,editClientId:null})">← Back</button>
+    </div>
+    <div class="card">
+      <div class="form-grid">
+        <div class="field"><label>Client / Company Name *</label><input id="cl-name" value="${c.name||''}" placeholder="Acme Ltd"></div>
+        <div class="field"><label>Contact Name</label><input id="cl-contact" value="${c.contact||''}" placeholder="John Smith"></div>
+        <div class="field"><label>Email</label><input id="cl-email" type="email" value="${c.email||''}" placeholder="john@acme.com"></div>
+        <div class="field"><label>Phone</label><input id="cl-phone" value="${c.phone||''}" placeholder="+44 7700 000000"></div>
+        <div class="field" style="grid-column:1/-1"><label>Address</label><textarea id="cl-addr" placeholder="123 Business Road&#10;London EC1A 1BB">${c.address||''}</textarea></div>
+        <div class="field"><label>Website</label><input id="cl-web" value="${c.website||''}" placeholder="www.acme.com"></div>
+        <div class="field"><label>Default Payment Terms</label>
+          <select id="cl-terms">
+            ${['7 days','14 days','30 days','60 days','On receipt'].map(t=>`<option ${(c.terms||'30 days')===t?'selected':''}>${t}</option>`).join('')}
+          </select>
+        </div>
+        <div class="field" style="grid-column:1/-1"><label>Notes</label><textarea id="cl-notes" placeholder="Any notes about this client…">${c.notes||''}</textarea></div>
+        <div class="field" style="grid-column:1/-1"><label>Colour Tag</label>
+          <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:4px">
+            ${colors.map(col=>`<div onclick="document.querySelectorAll('.col-swatch').forEach(s=>s.style.outline='none');this.style.outline='3px solid #fff';document.getElementById('cl-color').value='${col}'" class="col-swatch" style="width:28px;height:28px;border-radius:50%;background:${col};cursor:pointer;outline:${(c.color||colors[0])===col?'3px solid #fff':'none'};outline-offset:2px"></div>`).join('')}
+            <input type="hidden" id="cl-color" value="${c.color||colors[0]}">
+          </div>
+        </div>
+      </div>
+    </div>
+    <div style="display:flex;gap:10px;justify-content:flex-end">
+      <button class="btn btn-secondary" onclick="set({showNewClient:false,editClientId:null})">Cancel</button>
+      <button class="btn btn-primary" onclick="saveClient('${editId||''}')">Save Client</button>
+    </div>
+  </div>`;
+}
+
+async function saveClient(editId) {
+  const client = {
+    id: editId || uid(),
+    name: document.getElementById('cl-name').value.trim(),
+    contact: document.getElementById('cl-contact').value,
+    email: document.getElementById('cl-email').value,
+    phone: document.getElementById('cl-phone').value,
+    address: document.getElementById('cl-addr').value,
+    website: document.getElementById('cl-web').value,
+    terms: document.getElementById('cl-terms').value,
+    notes: document.getElementById('cl-notes').value,
+    color: document.getElementById('cl-color').value
+  };
+  if (!client.name) { alert('Please enter a client name'); return; }
+  const next = editId
+    ? S.clients.map(c => c.id===editId ? client : c)
+    : [...S.clients, client];
+  S.clients = next; lsSet('clients', next);
+  if (S.gdConnected) gdWriteJSON('clients.json', next).catch(()=>{});
+  set({ showNewClient: false, editClientId: null });
+}
+
+async function delClient(id) {
+  if (!confirm('Delete this client?')) return;
+  const next = S.clients.filter(c=>c.id!==id);
+  S.clients=next; lsSet('clients',next);
+  if(S.gdConnected) gdWriteJSON('clients.json',next).catch(()=>{});
+  set({});
+}
+
+function autofillClient(clientId) {
+  if (!clientId) return;
+  const c = S.clients.find(cl=>cl.id===clientId);
+  if (!c) return;
+  const nameEl = document.getElementById('fi-client');
+  const addrEl = document.getElementById('fi-caddr');
+  const emailEl = document.getElementById('fi-cemail');
+  if (nameEl) nameEl.value = c.name;
+  if (addrEl) addrEl.value = [c.contact, c.address].filter(Boolean).join('\n');
+  if (emailEl) emailEl.value = c.email || '';
+  // Set due date based on payment terms
+  if (c.terms) {
+    const days = parseInt(c.terms) || 30;
+    const due = new Date(); due.setDate(due.getDate()+days);
+    const dueEl = document.getElementById('fi-due');
+    if (dueEl && !isNaN(days)) dueEl.value = due.toISOString().split('T')[0];
+  }
+}
+
+function invoiceForClient(clientId) {
+  lineItems=[{desc:'',qty:1,price:''}];
+  set({showNewInvoice:true, tab:'invoices'});
+  // autofill after render
+  setTimeout(()=>{ autofillClient(clientId); const sel=document.getElementById('fi-client-pick'); if(sel) sel.value=clientId; }, 100);
+}
+
+function setTab(tab) { set({tab,showNewInvoice:false,showNewExpense:false,showNewClient:false,editClientId:null,viewInvoice:null}); }
+function openSettings() { set({screen:'setup'}); }
+async function connectGD() {
+  try {
+    await gdSignIn(S.settings.googleClientId);
+    set({gdConnected:true});
+    await loadFromGD();
+  } catch(e) { alert('Google Drive connection failed: '+e.message); }
+}
+
+// ══════════════════════════════════════════════
+// BIND
+// ══════════════════════════════════════════════
+function bindDashboard() {
+  if (S.showNewInvoice) bindInvoiceForm();
+}
+
+// ══════════════════════════════════════════════
+// GOOGLE IDENTITY SERVICES
+// ══════════════════════════════════════════════
+const gdScript = document.createElement('script');
+gdScript.src = 'https://accounts.google.com/gsi/client';
+gdScript.onload = () => init();
+document.head.appendChild(gdScript);
+</script>
+</body>
+</html>
